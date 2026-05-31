@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Voting System</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+}
+
+.container{
+    width:95%;
+    max-width:1000px;
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    color:#38bdf8;
+}
+
+.login{
+    text-align:center;
+}
+
+input{
+    width:300px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin:10px;
+    font-size:16px;
+}
+
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:10px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+.candidates{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+.card{
+    background:#334155;
+    width:250px;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.avatar{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:#38bdf8;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.results{
+    margin-top:30px;
+}
+
+.bar{
+    width:100%;
+    height:22px;
+    background:#475569;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.fill{
+    height:100%;
+    width:0%;
+    background:#22c55e;
+    transition:0.5s;
+}
+
+.hidden{
+    display:none;
+}
+
+.winner{
+    text-align:center;
+    margin-top:20px;
+    font-size:22px;
+    color:gold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🗳 Online Voting System</h1>
+
+<div id="loginSection" class="login">
+    <h2>Voter Login</h2>
+    <input type="text" id="username" placeholder="Enter Your Name">
+    <br>
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="voteSection" class="hidden">
+
+<h2 style="text-align:center;">Choose Your Candidate</h2>
+
+<div class="candidates">
+
+<div class="card">
+    <div class="avatar">A</div>
+    <h3>Candidate A</h3>
+    <p>Development Party</p>
+    <br>
+    <button onclick="vote('A')">Vote</button>
+</div>
+
+<div class="card">
+    <div class="avatar">B</div>
+    <h3>Candidate B</h3>
+    <p>Progress Party</p>
+    <br>
+    <button onclick="vote('B')">Vote</button>
+</div>
+
+<div class="card">
+    <div class="avatar">C</div>
+    <h3>Candidate C</h3>
+    <p>Future Party</p>
+    <br>
+    <button onclick="vote('C')">Vote</button>
+</div>
+
+</div>
+
+<div class="results">
+
+<h2>📊 Live Results</h2>
+
+<p>Candidate A : <span id="aCount">0</span></p>
+<div class="bar"><div id="aBar" class="fill"></div></div>
+
+<p>Candidate B : <span id="bCount">0</span></p>
+<div class="bar"><div id="bBar" class="fill"></div></div>
+
+<p>Candidate C : <span id="cCount">0</span></p>
+<div class="bar"><div id="cBar" class="fill"></div></div>
+
+<button onclick="showWinner()">Show Winner</button>
+
+<div id="winner" class="winner"></div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+let votes = {
+    A:0,
+    B:0,
+    C:0
+};
+
+function login(){
+
+let name = document.getElementById("username").value;
+
+if(name==""){
+    alert("Please enter your name");
+    return;
+}
+
+document.getElementById("loginSection").classList.add("hidden");
+document.getElementById("voteSection").classList.remove("hidden");
+}
+
+function vote(candidate){
+
+if(localStorage.getItem("voted")){
+    alert("You have already voted!");
+    return;
+}
+
+votes[candidate]++;
+
+localStorage.setItem("voted","true");
+
+updateResults();
+
+alert("Vote Submitted Successfully!");
+}
+
+function updateResults(){
+
+let total = votes.A + votes.B + votes.C;
+
+document.getElementById("aCount").innerText = votes.A;
+document.getElementById("bCount").innerText = votes.B;
+document.getElementById("cCount").innerText = votes.C;
+
+if(total>0){
+
+document.getElementById("aBar").style.width =
+(votes.A/total*100)+"%";
+
+document.getElementById("bBar").style.width =
+(votes.B/total*100)+"%";
+
+document.getElementById("cBar").style.width =
+(votes.C/total*100)+"%";
+}
+}
+
+function showWinner(){
+
+let winner="";
+
+if(votes.A>votes.B && votes.A>votes.C)
+winner="🏆 Candidate A Wins";
+
+else if(votes.B>votes.A && votes.B>votes.C)
+winner="🏆 Candidate B Wins";
+
+else if(votes.C>votes.A && votes.C>votes.B)
+winner="🏆 Candidate C Wins";
+
+else
+winner="🤝 It's a Tie";
+
+document.getElementById("winner").innerHTML=winner;
+}
+
+</script>
+
+</body>
+</html>
